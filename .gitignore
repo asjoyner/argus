@@ -25,3 +25,5 @@ _testmain.go
 
 # Ignore built binaries
 cmd/argus/argus
+cmd/await/await
+cmd/trigger/trigger
