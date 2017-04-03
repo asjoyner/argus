@@ -2,25 +2,28 @@ package main
 
 import (
 	"log"
-	"os"
+	"time"
 
 	"github.com/asjoyner/argus/capture"
 )
 
+var imageHistory = 5
+
 func main() {
-	img, err := capture.GetImage(nil)
-	if err != nil {
-		log.Fatalf("could not read image from camera: %s", err)
-	}
+	images := make([][]byte, 0, imageHistory)
 
-	fh, err := os.Create("/tmp/output.jpg")
-	if err != nil {
-		log.Fatalf("could not open /tmp/output.jpg: %s", err)
-	}
-	defer fh.Close()
-
-	if _, err := fh.Write(img); err != nil {
-		log.Fatalf("could not write image to /tmp/output.jpg: %s", err)
+	for {
+		img, err := capture.GetImage(nil)
+		if err != nil {
+			log.Fatalf("could not read image from camera: %s", err)
+		}
+		if len(images) > imageHistory {
+			images = append(images[1:], img)
+		} else {
+			images = append(images, img)
+		}
+		time.Sleep(4 * time.Second)
+		log.Println(len(images))
 	}
 
 }
