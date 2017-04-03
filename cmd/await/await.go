@@ -1,3 +1,4 @@
+// await listens for an incoming trigger request, and exits when it is received.
 package main
 
 import (

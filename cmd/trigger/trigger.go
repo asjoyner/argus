@@ -1,3 +1,4 @@
+// trigger sends a trigger request via network broadcast.
 package main
 
 import (
