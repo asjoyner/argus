@@ -1,3 +1,11 @@
+/*Package capture is an interface to the Raspberry Pi camera.
+
+Currently, it uses the raspistill binary to pull an image with a timeout of 1
+second.  This works okay if you don't want images more often than about every 2
+seconds.  Future improvemets might use the MMAL library (via
+https://github.com/djthorpe/gopi) to get more stable images, at a higher
+framerate.
+*/
 package capture
 
 import (
@@ -9,6 +17,7 @@ import (
 
 var raspistillPath = "/usr/bin/raspistill"
 
+// CameraOptions provides a way to set options to the camera.
 type CameraOptions struct {
 	hf bool // flip the image horizontally
 	vf bool // flip the image vertically
@@ -17,7 +26,7 @@ type CameraOptions struct {
 // GetImage takes options as a struct, calls raspistill, and returns an
 // io.Writer with the image data from the camera.
 func GetImage(opts *CameraOptions) ([]byte, error) {
-	args := []string{"-o", "-"}
+	args := []string{"-o", "-", "--nopreview", "--timeout", "1"}
 
 	if opts != nil {
 		if opts.hf {
@@ -51,7 +60,7 @@ func GetImage(opts *CameraOptions) ([]byte, error) {
 			// since this is raspistill-specific, that should be fine.  :)
 			if status, ok := exiterr.Sys().(syscall.WaitStatus); ok {
 				if status.ExitStatus() == 70 {
-					return []byte{}, fmt.Errorf("Please run raspi-config and enable the camera.")
+					return []byte{}, fmt.Errorf("please run raspi-config and enable the camera")
 				}
 			}
 		}
